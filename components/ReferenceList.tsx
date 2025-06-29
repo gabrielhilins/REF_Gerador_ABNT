@@ -16,7 +16,7 @@ export default function ReferenceList({ references, onRemoveReference }: Referen
   if (references.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gray-400 font-poppins">
           Nenhuma referência adicionada ainda. Use o formulário ao lado para começar.
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function ReferenceList({ references, onRemoveReference }: Referen
           className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700"
         >
           <div className="flex justify-between items-start mb-3">
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide font-poppins">
               {reference.type === "book" && "Livro"}
               {reference.type === "article" && "Artigo Científico"}
               {reference.type === "website" && "Site"}
@@ -42,17 +42,19 @@ export default function ReferenceList({ references, onRemoveReference }: Referen
             <div className="flex space-x-2">
               <button
                 onClick={() => copyReference(reference.formatted)}
-                className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-200 hover:shadow-md font-poppins"
                 title="Copiar referência"
               >
-                <Copy className="w-4 h-4" />
+                <Copy className="w-3 h-3" />
+                Copiar
               </button>
               <button
                 onClick={() => onRemoveReference(reference.id)}
-                className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition-all duration-200 hover:shadow-md font-poppins"
                 title="Excluir referência"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3 h-3" />
+                Excluir
               </button>
             </div>
           </div>
