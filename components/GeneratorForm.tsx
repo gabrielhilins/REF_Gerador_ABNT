@@ -1,10 +1,14 @@
 "use client"
 
-import type React from "react"
-
+import type { FormEvent } from "react"
 import { useState } from "react"
 import { Book, FileText, Globe, BookOpen, GraduationCap, Mic } from "lucide-react"
 import type { Reference } from "@/app/page"
+import type { FormData } from "@/types/form"
+import { fieldConfigs } from "@/data/fieldConfigs"
+import { formatDate, formatYear, formatPages, formatUrl } from "@/lib/formatters"
+import { validateForm } from "@/lib/validators"
+import { formatReference } from "@/lib/referenceFormatter"
 
 interface GeneratorFormProps {
   onAddReference: (reference: Reference) => void
@@ -19,155 +23,30 @@ const referenceTypes = [
   { value: "interview", label: "Entrevista", icon: <Mic className="w-5 h-5" /> },
 ]
 
-const fieldConfigs = {
-  book: [
-    { name: "author", label: "Autor(es)", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "title", label: "Título", required: true, placeholder: "Título do livro", type: "text" },
-    { name: "city", label: "Local", required: true, placeholder: "São Paulo", type: "text" },
-    { name: "publisher", label: "Editora", required: true, placeholder: "Editora", type: "text" },
-    { name: "year", label: "Ano", required: true, placeholder: "2023", type: "year" },
-  ],
-  article: [
-    { name: "author", label: "Autor(es)", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "title", label: "Título do artigo", required: true, placeholder: "Título do artigo", type: "text" },
-    { name: "journal", label: "Nome da revista", required: true, placeholder: "Nome da revista", type: "text" },
-    { name: "volume", label: "Volume", required: false, placeholder: "1", type: "volume" },
-    { name: "number", label: "Número", required: false, placeholder: "2", type: "number" },
-    { name: "pages", label: "Páginas", required: false, placeholder: "10-20", type: "pages" },
-    { name: "year", label: "Ano", required: true, placeholder: "2023", type: "year" },
-  ],
-  website: [
-    { name: "author", label: "Autor(es)", required: false, placeholder: "SOBRENOME, Nome (opcional)", type: "author" },
-    { name: "title", label: "Título", required: true, placeholder: "Título da página", type: "text" },
-    { name: "website", label: "Nome do site", required: true, placeholder: "Nome do site", type: "text" },
-    { name: "url", label: "URL", required: true, placeholder: "https://exemplo.com", type: "url" },
-    { name: "accessDate", label: "Data de acesso", required: true, placeholder: "DD/MM/AAAA", type: "date" },
-  ],
-  chapter: [
-    { name: "author", label: "Autor do capítulo", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "title", label: "Título do capítulo", required: true, placeholder: "Título do capítulo", type: "text" },
-    { name: "bookAuthor", label: "Autor do livro", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "bookTitle", label: "Título do livro", required: true, placeholder: "Título do livro", type: "text" },
-    { name: "city", label: "Local", required: true, placeholder: "São Paulo", type: "text" },
-    { name: "publisher", label: "Editora", required: true, placeholder: "Editora", type: "text" },
-    { name: "year", label: "Ano", required: true, placeholder: "2023", type: "year" },
-    { name: "pages", label: "Páginas", required: false, placeholder: "10-20", type: "pages" },
-  ],
-  thesis: [
-    { name: "author", label: "Autor", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "title", label: "Título", required: true, placeholder: "Título da tese/dissertação", type: "text" },
-    { name: "type", label: "Tipo", required: true, placeholder: "Tese ou Dissertação", type: "text" },
-    { name: "program", label: "Programa", required: true, placeholder: "Programa de Pós-graduação", type: "text" },
-    { name: "institution", label: "Instituição", required: true, placeholder: "Universidade", type: "text" },
-    { name: "city", label: "Local", required: true, placeholder: "São Paulo", type: "text" },
-    { name: "year", label: "Ano", required: true, placeholder: "2023", type: "year" },
-  ],
-  interview: [
-    { name: "interviewee", label: "Entrevistado", required: true, placeholder: "SOBRENOME, Nome", type: "author" },
-    { name: "title", label: "Título", required: true, placeholder: "Título da entrevista", type: "text" },
-    { name: "interviewer", label: "Entrevistador", required: true, placeholder: "Nome do entrevistador", type: "text" },
-    { name: "medium", label: "Meio", required: true, placeholder: "Rádio, TV, Podcast, etc.", type: "text" },
-    { name: "date", label: "Data", required: true, placeholder: "DD/MM/AAAA", type: "date" },
-  ],
-}
-
-const monthNames = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
-
 export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
-  const [selectedType, setSelectedType] = useState("book")
-  const [formData, setFormData] = useState<Record<string, string>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [selectedType, setSelectedType] = useState<string>("book")
+  const [formData, setFormData] = useState<FormData>({})
+  const [errors, setErrors] = useState<FormData>({})
+  const [hasMoreThanThreeAuthors, setHasMoreThanThreeAuthors] = useState<Record<string, boolean>>({})
 
-  const formatAuthor = (value: string): string => {
-    if (!value.trim()) return value
-
-    // Dividir por ponto e vírgula para múltiplos autores
-    const authors = value
-      .split(";")
-      .map((author) => {
-        const trimmedAuthor = author.trim()
-        if (!trimmedAuthor) return ""
-
-        // Verificar se já tem vírgula (formato SOBRENOME, Nome)
-        if (trimmedAuthor.includes(",")) {
-          const [surname, name] = trimmedAuthor.split(",").map((part) => part.trim())
-          return `${surname.toUpperCase()}, ${name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()}`
-        } else {
-          // Se não tem vírgula, assumir que é só o sobrenome ou nome completo
-          const words = trimmedAuthor.split(" ")
-          if (words.length === 1) {
-            return words[0].toUpperCase()
-          } else {
-            // Último palavra como sobrenome, resto como nome
-            const surname = words[words.length - 1].toUpperCase()
-            const firstName = words
-              .slice(0, -1)
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-              .join(" ")
-            return `${surname}, ${firstName}`
-          }
-        }
-      })
-      .filter((author) => author !== "")
-
-    return authors.join("; ")
-  }
-
-  const formatDate = (value: string): string => {
-    // Remove tudo que não é número
-    const numbers = value.replace(/\D/g, "")
-
-    // Limita a 8 dígitos
-    const limited = numbers.slice(0, 8)
-
-    // Adiciona as barras automaticamente
-    if (limited.length >= 3 && limited.length <= 4) {
-      return `${limited.slice(0, 2)}/${limited.slice(2)}`
-    } else if (limited.length >= 5) {
-      return `${limited.slice(0, 2)}/${limited.slice(2, 4)}/${limited.slice(4)}`
-    }
-
-    return limited
-  }
-
-  const formatDateForReference = (dateStr: string): string => {
-    if (!dateStr || dateStr.length < 8) return dateStr
-
-    const [day, month, year] = dateStr.split("/")
-    const monthIndex = Number.parseInt(month) - 1
-
-    if (monthIndex >= 0 && monthIndex < 12) {
-      return `${day} ${monthNames[monthIndex]}. ${year}`
-    }
-
-    return dateStr
-  }
-
-  const formatYear = (value: string): string => {
-    // Só permite números e limita a 4 dígitos
-    return value.replace(/\D/g, "").slice(0, 4)
-  }
-
-  const formatPages = (value: string): string => {
-    // Permite números e hífen
-    return value.replace(/[^\d-]/g, "")
-  }
-
-  const formatUrl = (value: string): string => {
-    // Se não começar com http, adicionar https://
-    if (value && !value.startsWith("http://") && !value.startsWith("https://")) {
-      return `https://${value}`
-    }
-    return value
-  }
-
-  const handleInputChange = (name: string, value: string, type: string) => {
+  const handleInputChange = (name: string, value: string, type: string, allowMultiple?: boolean) => {
     let formattedValue = value
 
+    if (type === "author" && allowMultiple && !hasMoreThanThreeAuthors[name]) {
+      const authors = value
+        .split(";")
+        .map((a) => a.trim())
+        .filter((a) => a)
+      if (authors.length > 3) {
+        return // Prevent adding more than 3 authors
+      }
+    }
+
+    if (type === "author" && allowMultiple && hasMoreThanThreeAuthors[name]) {
+      formattedValue = value.replace(/;/g, "").trim()
+    }
+
     switch (type) {
-      case "author":
-        formattedValue = formatAuthor(value)
-        break
       case "date":
         formattedValue = formatDate(value)
         break
@@ -182,7 +61,8 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
         break
       case "volume":
       case "number":
-        formattedValue = value.replace(/\D/g, "") // Só números
+      case "edition":
+        formattedValue = value.replace(/\D/g, "")
         break
     }
 
@@ -193,123 +73,44 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
     }
   }
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-    const fields = fieldConfigs[selectedType as keyof typeof fieldConfigs]
+  const handleMoreThanThreeAuthorsChange = (fieldName: string, checked: boolean) => {
+    setHasMoreThanThreeAuthors((prev) => ({ ...prev, [fieldName]: checked }))
+    if (checked && formData[fieldName]) {
+      const firstAuthor = formData[fieldName].split(";")[0]?.trim() || ""
+      setFormData((prev) => ({ ...prev, [fieldName]: firstAuthor }))
+    }
+    if (errors[fieldName]) {
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }))
+    }
+  }
 
-    fields.forEach((field) => {
-      const value = formData[field.name]?.trim()
-
-      if (field.required && !value) {
-        newErrors[field.name] = `${field.label} é obrigatório`
-        return
-      }
-
-      if (value) {
-        switch (field.type) {
-          case "author":
-            if (field.required && value.length < 3) {
-              newErrors[field.name] = "Nome do autor deve ter pelo menos 3 caracteres"
-            }
-            break
-          case "date":
-            if (value.length !== 10) {
-              newErrors[field.name] = "Data deve estar no formato DD/MM/AAAA"
-            } else {
-              const [day, month, year] = value.split("/")
-              const dayNum = Number.parseInt(day)
-              const monthNum = Number.parseInt(month)
-              const yearNum = Number.parseInt(year)
-
-              if (dayNum < 1 || dayNum > 31) {
-                newErrors[field.name] = "Dia inválido (1-31)"
-              } else if (monthNum < 1 || monthNum > 12) {
-                newErrors[field.name] = "Mês inválido (1-12)"
-              } else if (yearNum < 1900 || yearNum > new Date().getFullYear()) {
-                newErrors[field.name] = "Ano inválido"
-              }
-            }
-            break
-          case "year":
-            const yearNum = Number.parseInt(value)
-            if (value.length !== 4 || yearNum < 1900 || yearNum > new Date().getFullYear()) {
-              newErrors[field.name] = "Ano deve ter 4 dígitos e ser válido"
-            }
-            break
-          case "url":
-            if (!value.startsWith("http://") && !value.startsWith("https://")) {
-              newErrors[field.name] = "URL deve começar com http:// ou https://"
-            }
-            break
-          case "pages":
-            if (value && !value.match(/^\d+(-\d+)?$/)) {
-              newErrors[field.name] = 'Páginas devem estar no formato "10" ou "10-20"'
-            }
-            break
-        }
-      }
-    })
-
+  const handleValidation = () => {
+    const newErrors = validateForm(selectedType, fieldConfigs, formData, hasMoreThanThreeAuthors)
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const formatReference = (type: string, data: Record<string, string>) => {
-    switch (type) {
-      case "book":
-        return `${data.author}. *${data.title}*. ${data.city}: ${data.publisher}, ${data.year}.`
-
-      case "article":
-        let articleRef = `${data.author}. ${data.title}. *${data.journal}*`
-        if (data.volume) articleRef += `, v. ${data.volume}`
-        if (data.number) articleRef += `, n. ${data.number}`
-        if (data.pages) articleRef += `, p. ${data.pages}`
-        articleRef += `, ${data.year}.`
-        return articleRef
-
-      case "website":
-        const authorPart = data.author ? `${data.author}. ` : ""
-        const formattedDate = formatDateForReference(data.accessDate)
-        return `${authorPart}*${data.title}*. ${data.website}. Disponível em: ${data.url}. Acesso em: ${formattedDate}.`
-
-      case "chapter":
-        let chapterRef = `${data.author}. ${data.title}. In: ${data.bookAuthor}. *${data.bookTitle}*. ${data.city}: ${data.publisher}, ${data.year}`
-        if (data.pages) chapterRef += `. p. ${data.pages}`
-        chapterRef += "."
-        return chapterRef
-
-      case "thesis":
-        return `${data.author}. *${data.title}*. ${data.year}. ${data.type} (${data.program}) - ${data.institution}, ${data.city}, ${data.year}.`
-
-      case "interview":
-        const formattedInterviewDate = formatDateForReference(data.date)
-        return `${data.interviewee}. *${data.title}*. Entrevista concedida a ${data.interviewer}. ${data.medium}, ${formattedInterviewDate}.`
-
-      default:
-        return ""
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-
-    if (!validateForm()) return
+    if (!handleValidation()) return
 
     const reference: Reference = {
       id: Date.now().toString(),
       type: selectedType,
       data: formData,
-      formatted: formatReference(selectedType, formData),
+      formatted: formatReference(selectedType, formData, fieldConfigs, hasMoreThanThreeAuthors),
     }
 
     onAddReference(reference)
     setFormData({})
+    setHasMoreThanThreeAuthors({})
+    setErrors({})
   }
 
-  const currentFields = fieldConfigs[selectedType as keyof typeof fieldConfigs]
+  const currentFields = fieldConfigs[selectedType]
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 font-poppins">
@@ -324,15 +125,18 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
                   setSelectedType(type.value)
                   setFormData({})
                   setErrors({})
+                  setHasMoreThanThreeAuthors({})
                 }}
-                className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors ${
+                className={`flex items-center space-x-2 p-3 rounded-lg border transition-all duration-300 font-poppins
+                focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:shadow-lg
+                ${
                   selectedType === type.value
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 shadow-md"
+                    : "border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:shadow-sm"
                 }`}
               >
                 {type.icon}
-                <span className="text-sm font-medium font-poppins">{type.label}</span>
+                <span className="text-sm font-medium">{type.label}</span>
               </button>
             ))}
           </div>
@@ -340,44 +144,116 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
 
         <div className="space-y-4">
           {currentFields.map((field) => (
-            <div key={field.name}>
+            <div key={field.name} className="relative">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 font-poppins">
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </label>
 
               {field.type === "author" && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-poppins">
-                  Para múltiplos autores, separe com ponto e vírgula (;)
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-poppins">
+                  {field.allowMultiple && hasMoreThanThreeAuthors[field.name]
+                    ? "Digite apenas o primeiro autor (Sobrenome, Nome)"
+                    : field.allowMultiple
+                      ? "Separe até 3 autores com ponto e vírgula (;). Ex: Sobrenome, Nome; Sobrenome, Nome"
+                      : selectedType === "website"
+                        ? "Digite o nome da pessoa (Sobrenome, Nome) ou organização"
+                        : "Digite no formato Sobrenome, Nome"}
                 </p>
+              )}
+
+              {field.type === "edition" && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-poppins">
+                  Caso não seja primeira edição, especifique
+                </p>
+              )}
+
+              {field.type === "author" && field.allowMultiple && (
+                <div className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id={`${field.name}-more-than-three`}
+                    checked={hasMoreThanThreeAuthors[field.name] || false}
+                    onChange={(e) => handleMoreThanThreeAuthorsChange(field.name, e.target.checked)}
+                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor={`${field.name}-more-than-three`}
+                    className="text-sm text-gray-700 dark:text-gray-300 font-poppins"
+                  >
+                    Mais de 3 autores?
+                  </label>
+                </div>
               )}
 
               <input
                 type="text"
                 value={formData[field.name] || ""}
-                onChange={(e) => handleInputChange(field.name, e.target.value, field.type)}
+                onChange={(e) => handleInputChange(field.name, e.target.value, field.type, field.allowMultiple)}
                 placeholder={field.placeholder}
-                maxLength={field.type === "date" ? 10 : field.type === "year" ? 4 : undefined}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-poppins ${
-                  errors[field.name] ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                maxLength={
+                  field.type === "date" ? 10 : field.type === "year" ? 4 : field.type === "edition" ? 2 : undefined
+                }
+                disabled={
+                  field.type === "author" &&
+                  field.allowMultiple &&
+                  !hasMoreThanThreeAuthors[field.name] &&
+                  formData[field.name]?.split(";").filter((a) => a.trim()).length >= 3
+                }
+                className={`w-full px-3 py-2 border rounded-lg transition-all duration-300 font-poppins
+                focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none focus:shadow-xl focus:shadow-blue-500/10 focus:scale-[1.02]
+                hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5
+                dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400/20
+                ${
+                  errors[field.name]
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                ${
+                  field.type === "author" &&
+                  field.allowMultiple &&
+                  !hasMoreThanThreeAuthors[field.name] &&
+                  formData[field.name]?.split(";").filter((a) => a.trim()).length >= 3
+                    ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
+                    : ""
                 }`}
               />
+
+              {field.type === "author" &&
+                field.allowMultiple &&
+                !hasMoreThanThreeAuthors[field.name] &&
+                formData[field.name]?.split(";").filter((a) => a.trim()).length >= 3 && (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1 font-poppins">
+                    Limite de 3 autores atingido. Marque "Mais de 3 autores" para usar et al.
+                  </p>
+                )}
+
               {errors[field.name] && <p className="mt-1 text-sm text-red-500 font-poppins">{errors[field.name]}</p>}
             </div>
           ))}
         </div>
 
         {Object.keys(formData).length > 0 && (
-          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
             <h4 className="font-medium text-gray-900 dark:text-white mb-2 font-poppins">Visualização Prévia:</h4>
-            <p className="text-sm text-gray-700 dark:text-gray-300 font-serif leading-relaxed">
-              {formatReference(selectedType, formData)}
+            <p className="text-sm text-gray-700 dark:text-gray-200 font-serif leading-relaxed">
+              {formatReference(selectedType, formData, fieldConfigs, hasMoreThanThreeAuthors)}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-poppins">
+              A visualização mostra a referência formatada. Preencha todos os campos obrigatórios para evitar mensagens
+              de "[não informado]".
             </p>
           </div>
         )}
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium font-poppins"
+          disabled={Object.keys(formData).length === 0}
+          className={`w-full py-3 px-4 rounded-lg font-medium font-poppins transition-all duration-300
+          ${
+            Object.keys(formData).length === 0
+              ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:bg-blue-700 focus:shadow-xl active:translate-y-0 active:shadow-md"
+          }`}
         >
           Adicionar Referência
         </button>
