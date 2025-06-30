@@ -64,7 +64,7 @@ export default function Footer({ darkMode = false }: FooterProps) {
               </li>
               <li>
                 <a
-                  href="https://github.com/GGABSTECHDESIGN/REF_Gerador_ABNT"
+                  href="https://github.com/gabrielhilins/REF_Gerador_ABNT"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1 font-poppins"

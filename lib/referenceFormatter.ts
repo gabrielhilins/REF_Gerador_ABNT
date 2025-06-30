@@ -26,13 +26,13 @@ export const formatReference = (
 
   switch (type) {
     case "book":
-      let bookRef = `${formattedData.author}. _${data.title || "[Título não informado]"}_`
+      let bookRef = `${formattedData.author}. ${data.title || "[Título não informado]"}`
       if (data.edition && data.edition !== "1") bookRef += `. ${data.edition}. ed`
       bookRef += `. ${data.city || "[Local não informado]"}: ${data.publisher || "[Editora não informada]"}, ${data.year || "[Ano não informado]"}.`
       return bookRef
 
     case "article":
-      let articleRef = `${formattedData.author}. ${data.title || "[Título não informado]"}. _${data.journal || "[Revista não informada]"}_`
+      let articleRef = `${formattedData.author}. ${data.title || "[Título não informado]"}. ${data.journal || "[Revista não informada]"}`
       if (data.volume) articleRef += `, v. ${data.volume}`
       if (data.number) articleRef += `, n. ${data.number}`
       if (data.pages) articleRef += `, p. ${data.pages}`
@@ -43,10 +43,10 @@ export const formatReference = (
       const authorPart =
         formattedData.author && formattedData.author !== "[Autor não informado]" ? `${formattedData.author}. ` : ""
       const formattedDate = formatDateForReference(data.accessDate || "")
-      return `${authorPart}_${data.title || "[Título não informado]"}_. ${data.website || "[Site não informado]"}. Disponível em: <${data.url || "[URL não informada]"}>. Acesso em: ${formattedDate}.`
+      return `${authorPart}${data.title || "[Título não informado]"}. ${data.website || "[Site não informado]"}. Disponível em: <${data.url || "[URL não informada]"}>. Acesso em: ${formattedDate}.`
 
     case "chapter":
-      let chapterRef = `${formattedData.author}. ${data.title || "[Título não informado]"}. In: ${formattedData.bookAuthor}. _${data.bookTitle || "[Título do livro não informado]"}_`
+      let chapterRef = `${formattedData.author}. ${data.title || "[Título não informado]"}. In: ${formattedData.bookAuthor}. ${data.bookTitle || "[Título do livro não informado]"}`
       if (data.edition && data.edition !== "1") chapterRef += `. ${data.edition}. ed`
       chapterRef += `. ${data.city || "[Local não informado]"}: ${data.publisher || "[Editora não informada]"}, ${data.year || "[Ano não informado]"}`
       if (data.pages) chapterRef += `, p. ${data.pages}`
@@ -54,11 +54,11 @@ export const formatReference = (
       return chapterRef
 
     case "thesis":
-      return `${formattedData.author}. _${data.title || "[Título não informado]"}_. ${data.type || "[Tipo não informado]"} (${data.program || "[Programa não informado]"}) - ${data.institution || "[Instituição não informada]"}, ${data.city || "[Local não informado]"}, ${data.year || "[Ano não informado]"}.`
+      return `${formattedData.author}. ${data.title || "[Título não informado]"}. ${data.type || "[Tipo não informado]"} (${data.program || "[Programa não informado]"}) - ${data.institution || "[Instituição não informada]"}, ${data.city || "[Local não informado]"}, ${data.year || "[Ano não informado]"}.`
 
     case "interview":
       const formattedInterviewDate = formatDateForReference(data.date || "")
-      return `${formattedData.interviewee}. _${data.title || "[Título não informado]"}_. Entrevista concedida a ${data.interviewer || "[Entrevistador não informado]"}. ${data.medium || "[Meio não informado]"}, ${formattedInterviewDate}.`
+      return `${formattedData.interviewee}. ${data.title || "[Título não informado]"}. Entrevista concedida a ${data.interviewer || "[Entrevistador não informado]"}. ${data.medium || "[Meio não informado]"}, ${formattedInterviewDate}.`
 
     default:
       return "[Tipo de referência inválido]"
