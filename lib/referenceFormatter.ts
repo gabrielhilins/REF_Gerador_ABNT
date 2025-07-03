@@ -43,7 +43,7 @@ export const formatReference = (
       const authorPart =
         formattedData.author && formattedData.author !== "[Autor não informado]" ? `${formattedData.author}. ` : ""
       const formattedDate = formatDateForReference(data.accessDate || "")
-      return `${authorPart}${data.title || "[Título não informado]"}. ${data.website || "[Site não informado]"}. Disponível em: <${data.url || "[URL não informada]"}>. Acesso em: ${formattedDate}.`
+      return `${authorPart}${data.title || "[Título não informado]"}. ${data.website || "[Site não informado]"}. Disponível em: [${data.url || "[URL não informada]"}]. Acesso em: ${formattedDate}.`
 
     case "chapter":
       let chapterRef = `${formattedData.author}. ${data.title || "[Título não informado]"}. In: ${formattedData.bookAuthor}. ${data.bookTitle || "[Título do livro não informado]"}`

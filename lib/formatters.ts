@@ -118,3 +118,45 @@ export const formatUrl = (value: string): string => {
 export const formatEdition = (value: string): string => {
   return value.replace(/\D/g, "").slice(0, 2)
 }
+
+// Nova função para capitalizar texto automaticamente
+export const formatCapitalize = (value: string): string => {
+  if (!value.trim()) return value
+
+  return (
+    value
+      .toLowerCase()
+      .split(" ")
+      .map((word) => {
+        // Palavras que devem permanecer em minúscula (preposições, artigos, etc.)
+        const lowercaseWords = [
+          "de",
+          "da",
+          "do",
+          "das",
+          "dos",
+          "e",
+          "em",
+          "na",
+          "no",
+          "nas",
+          "nos",
+          "para",
+          "por",
+          "com",
+          "sem",
+          "sob",
+          "sobre",
+        ]
+
+        if (lowercaseWords.includes(word.toLowerCase())) {
+          return word.toLowerCase()
+        }
+
+        return word.charAt(0).toUpperCase() + word.slice(1)
+      })
+      .join(" ")
+      // Sempre capitalizar a primeira palavra
+      .replace(/^./, (match) => match.toUpperCase())
+  )
+}
