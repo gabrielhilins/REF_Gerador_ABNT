@@ -50,7 +50,7 @@ export default function App() {
   }
 
   const copyAllReferences = () => {
-    const allReferences = references.map((ref) => ref.formatted).join("\n\n")
+    const allReferences = references.map((ref) => ref.formatted).join("\n")
     navigator.clipboard.writeText(allReferences)
   }
 
@@ -91,16 +91,12 @@ export default function App() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white font-poppins">
                   Suas Referências ({references.length})
                 </h2>
-                {references.length > 0 && (
-                  <button
-                    onClick={copyAllReferences}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-poppins"
-                  >
-                    Copiar Todas
-                  </button>
-                )}
               </div>
-              <ReferenceList references={references} onRemoveReference={removeReference} />
+              <ReferenceList
+                references={references}
+                onRemoveReference={removeReference}
+                onCopyAllReferences={copyAllReferences}
+              />
             </div>
           </div>
         </section>

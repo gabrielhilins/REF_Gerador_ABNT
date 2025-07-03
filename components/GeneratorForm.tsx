@@ -6,7 +6,7 @@ import { Book, FileText, Globe, BookOpen, GraduationCap, Mic } from "lucide-reac
 import type { Reference } from "@/app/page"
 import type { FormData } from "@/types/form"
 import { fieldConfigs } from "@/data/fieldConfigs"
-import { formatDate, formatYear, formatPages, formatUrl } from "@/lib/formatters"
+import { formatDate, formatYear, formatPages, formatUrl, formatCapitalize } from "@/lib/formatters"
 import { validateForm } from "@/lib/validators"
 import { formatReference } from "@/lib/referenceFormatter"
 
@@ -63,6 +63,16 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
       case "number":
       case "edition":
         formattedValue = value.replace(/\D/g, "")
+        break
+      case "text":
+        // Aplicar capitalização automática para campos de texto
+        formattedValue = formatCapitalize(value)
+        break
+      default:
+        // Para outros tipos que não são author, também aplicar capitalização
+        if (type !== "author" && type !== "url") {
+          formattedValue = formatCapitalize(value)
+        }
         break
     }
 
@@ -164,6 +174,12 @@ export default function GeneratorForm({ onAddReference }: GeneratorFormProps) {
               {field.type === "edition" && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-poppins">
                   Caso não seja primeira edição, especifique
+                </p>
+              )}
+
+              {field.type === "text" && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-poppins">
+                  A primeira letra será automaticamente maiúscula
                 </p>
               )}
 
