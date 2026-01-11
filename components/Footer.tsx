@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { ExternalLink, Mail } from "lucide-react"
-import Link from "next/link"
-import GGABSCard from "./GGABSCard"
+import { ExternalLink, Mail } from "lucide-react";
+import Link from "next/link";
+import GGABSCard from "./GGABSCard";
 
 interface FooterProps {
-  darkMode?: boolean
+  darkMode?: boolean;
 }
 
 export default function Footer({ darkMode = false }: FooterProps) {
@@ -17,14 +17,19 @@ export default function Footer({ darkMode = false }: FooterProps) {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src={darkMode ? "/Logo Principal Azul Claro.png" : "/Logo Principal Azul.png"}
+                src={
+                  darkMode
+                    ? "/Logo Principal Azul Claro.png"
+                    : "/Logo Principal Azul.png"
+                }
                 alt="REF - Gerador de Referências ABNT"
                 className="h-12 w-auto object-contain"
               />
             </div>
             <p className="text-gray-600 text-justify dark:text-gray-400 mb-4 font-poppins">
-              Gerador de referências ABNT moderno e intuitivo. Criado para facilitar a vida de estudantes, professores e
-              pesquisadores na criação de referências bibliográficas precisas e padronizadas.
+              Gerador de referências ABNT moderno e intuitivo. Criado para
+              facilitar a vida de estudantes, professores e pesquisadores na
+              criação de referências bibliográficas precisas e padronizadas.
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full font-medium font-poppins">
@@ -41,7 +46,9 @@ export default function Footer({ darkMode = false }: FooterProps) {
 
           {/* Links Úteis */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-4 font-poppins">Links Úteis</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-4 font-poppins">
+              Links Úteis
+            </h4>
             <ul className="space-y-3">
               <li>
                 <a
@@ -85,14 +92,28 @@ export default function Footer({ darkMode = false }: FooterProps) {
             </ul>
 
             <div className="mt-6">
-              <h5 className="font-medium text-gray-900 dark:text-white mb-3 text-sm font-poppins">Tipos Suportados</h5>
+              <h5 className="font-medium text-gray-900 dark:text-white mb-3 text-sm font-poppins">
+                Tipos Suportados
+              </h5>
               <div className="grid grid-cols-2 gap-1 text-xs font-poppins">
-                <span className="text-gray-600 dark:text-gray-400">📖 Livros</span>
-                <span className="text-gray-600 dark:text-gray-400">📝 Artigos</span>
-                <span className="text-gray-600 dark:text-gray-400">🌐 Sites</span>
-                <span className="text-gray-600 dark:text-gray-400">📑 Capítulos</span>
-                <span className="text-gray-600 dark:text-gray-400">🎓 Teses</span>
-                <span className="text-gray-600 dark:text-gray-400">🎙️ Entrevistas</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  📖 Livros
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  📝 Artigos
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  🌐 Sites
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  📑 Capítulos
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  🎓 Teses
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  🎙️ Entrevistas
+                </span>
               </div>
             </div>
           </div>
@@ -108,14 +129,15 @@ export default function Footer({ darkMode = false }: FooterProps) {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-center md:text-left">
               <p className="text-gray-600 dark:text-gray-400 text-sm font-poppins">
-                © 2024 REF - Gerador de Referências ABNT. GGABS TECH & DESIGN. Todos os direitos reservados.
+                © {new Date().getFullYear()} GGABS TECH & DESIGN. Todos os
+                direitos reservados.
               </p>
             </div>
 
             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 font-poppins">
               <span>Versão 1.0.0</span>
               <span>•</span>
-              <span>Última atualização: Junho 2025</span>
+              <span>Última atualização: Janeiro 2026</span>
             </div>
           </div>
         </div>
@@ -124,5 +146,5 @@ export default function Footer({ darkMode = false }: FooterProps) {
       {/* Decorative bottom border */}
       <div className="h-1 bg-gradient-to-r from-ggabs-primary via-ggabs-accent to-ggabs-light"></div>
     </footer>
-  )
+  );
 }
