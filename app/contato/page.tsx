@@ -192,7 +192,7 @@ export default function ContatoPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-1 font-poppins">Email</h3>
-                    <p className="text-gray-600 dark:text-gray-400 font-poppins">ggabstechdesign@gmail.com</p>
+                    <p className="text-gray-600 dark:text-gray-400 font-poppins">contato@ggabstechdesign.com.br</p>
                     <p className="text-sm text-gray-500 dark:text-gray-500 font-poppins">Resposta em até 24 horas</p>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function ContatoPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-1 font-poppins">Suporte Técnico</h3>
-                    <p className="text-gray-600 dark:text-gray-400 font-poppins">ggabstechdesign@gmail.com</p>
+                    <p className="text-gray-600 dark:text-gray-400 font-poppins">contato@ggabstechdesign.com.br</p>
                     <p className="text-sm text-gray-500 dark:text-gray-500 font-poppins">
                       Para problemas técnicos e bugs
                     </p>

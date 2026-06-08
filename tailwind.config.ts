@@ -65,6 +65,7 @@ const config: Config = {
           accent: "#5A7CFF",
           light: "#A1C4FF",
         },
+        "brand-white": "#FFFFFF",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -97,6 +98,7 @@ const config: Config = {
         sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
         serif: ["Times New Roman", "serif"],
         poppins: ["var(--font-poppins)", "sans-serif"],
+        quicksand: ["var(--font-quicksand)", "sans-serif"],
       },
     },
   },
