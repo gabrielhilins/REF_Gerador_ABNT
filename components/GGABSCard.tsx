@@ -14,41 +14,38 @@ export default function GGABSCard() {
 
       <div className="relative z-10">
         {/* Logo GGABS */}
-        <div className="flex items-center gap-3 mb-4">
-          <img src="/Icone GGABS.png" alt="Ícone GGABS" className="w-10 h-10 object-contain" />
-          <div>
-            <img src="/Wordmark Branco GGABS.png" alt="GGABS" className="h-10 w-auto object-contain" />
-            <p className="text-white/80 text-sm font-medium font-poppins">Agência de tecnologia e design</p>
-          </div>
+        <div className="mb-4">
+          <img src="/Wordmark Branco GGABS.png" alt="GGABS" className="h-10 w-auto object-contain mb-1" />
+          <p className="text-white/80 text-sm font-medium font-poppins">Agência de tecnologia e design</p>
         </div>
 
         <p className="text-white/90 text-justify text-xs mb-4 leading-relaxed font-poppins">
-          Agência independente especializada em soluções digitais sob medida. Atuamos na interseção entre tecnologia e
-          design para desenvolver experiências únicas, funcionais e visualmente impactantes.
+          Especialistas em desenvolvimento de sites de alta performance e identidade visual estratégica. 
+          Construímos marcas exclusivas e páginas estruturadas para transformar visitantes em clientes.
         </p>
 
         <p className="text-white/90 text-justify text-xs mb-4 leading-relaxed font-poppins">
-          Nosso propósito é transformar ideias em realidade com criatividade e inovação, oferecendo soluções acessíveis
-          que impulsionam negócios de todos os tamanhos.
+          De Recife para todo o Brasil, criamos projetos sob medida sem templates genéricos, focando em velocidade 
+          excepcional e otimização para conversão.
         </p>
 
         {/* Features */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-yellow-300" />
-            <span className="text-xs text-white/90 font-medium font-poppins">Soluções personalizadas</span>
+            <span className="text-xs text-white/90 font-medium font-poppins">Alta Performance Web</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-green-300" />
-            <span className="text-xs text-white/90 font-medium font-poppins">Experiência do Usuário</span>
+            <span className="text-xs text-white/90 font-medium font-poppins">Design Exclusivo</span>
           </div>
           <div className="flex items-center gap-2">
             <Globe className="w-4 h-4 text-blue-300" />
-            <span className="text-xs text-white/90 font-medium font-poppins">Responsividade</span>
+            <span className="text-xs text-white/90 font-medium font-poppins">Soluções Sob Medida</span>
           </div>
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-purple-300" />
-            <span className="text-xs text-white/90 font-medium font-poppins">Design Impactante</span>
+            <span className="text-xs text-white/90 font-medium font-poppins">Foco em Conversão</span>
           </div>
         </div>
 

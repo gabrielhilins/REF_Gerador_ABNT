@@ -45,11 +45,11 @@ export default function Footer({ darkMode = false }: FooterProps) {
           </div>
 
           {/* Links Úteis */}
-          <div>
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h4 className="font-semibold text-gray-900 dark:text-white mb-4 font-poppins">
               Links Úteis
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-3 flex flex-col items-center md:items-start">
               <li>
                 <a
                   href="#generator"
@@ -81,21 +81,21 @@ export default function Footer({ darkMode = false }: FooterProps) {
                 </a>
               </li>
               <li>
-                <Link
-                  href="/contato"
+                <a
+                  href="mailto:contato@ggabstechdesign.com.br"
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1 font-poppins"
                 >
                   Contato e Suporte
                   <Mail className="w-3 h-3" />
-                </Link>
+                </a>
               </li>
             </ul>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-col items-center md:items-start">
               <h5 className="font-medium text-gray-900 dark:text-white mb-3 text-sm font-poppins">
                 Tipos Suportados
               </h5>
-              <div className="grid grid-cols-2 gap-1 text-xs font-poppins">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-poppins text-left md:text-left">
                 <span className="text-gray-600 dark:text-gray-400">
                   📖 Livros
                 </span>
@@ -137,7 +137,7 @@ export default function Footer({ darkMode = false }: FooterProps) {
             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 font-poppins">
               <span>Versão 1.0.0</span>
               <span>•</span>
-              <span>Última atualização: Janeiro 2026</span>
+              <span>Última atualização: Junho 2026</span>
             </div>
           </div>
         </div>
